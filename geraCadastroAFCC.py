@@ -15,6 +15,11 @@ def retorna_Endereco(cep):
 
 #funcao para buscar CEP a partir do endereco.
 def retorna_CEP(visitante, constantes):
+    if not visitante[constantes['cidade']]:
+        visitante[constantes['cidade']] = 'Rio de Janeiro'
+    if not visitante[constantes['uf']]:
+        visitante[constantes['uf']] = 'RJ'
+
     if visitante[constantes['rua']]:
         data = ViaCEP(uf=visitante[constantes['uf']], rua=visitante[constantes['rua']]+" "+visitante[constantes['numero']]+" "+visitante[constantes['complemento']], cidade=visitante[constantes['cidade']])
         enderecos = data.getDadosEndereco()
