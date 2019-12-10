@@ -27,14 +27,9 @@ class ViaCEP:
             return 'CEP NÃO INFORMADO'
 
     def getDadosEndereco(self):
-        if self.__rua:
-            if self.__cidade:
-                cidade_temp = self.__cidade.split(" ")
-                self.__cidade = "%20".join(cidade_temp)
-            else:
-                self.__cidade = "rio%20de%20janeiro"
-            if not self.__uf:
-                self.__uf = "RJ"
+        if self.__cidade and self.__uf and self.__rua:
+            cidade_temp = self.__cidade.split(" ")
+            self.__cidade = "%20".join(cidade_temp)
             rua_temp = self.__rua.split(" ")
             self.__rua = "%20".join(rua_temp)
             url_api = ('http://viacep.com.br/ws/' + self.__uf + '/' + self.__cidade + '/' + self.__rua + '/json/')
