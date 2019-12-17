@@ -22,6 +22,8 @@ class ViaCEP:
             req = requests.get(url_api)
             if req.status_code == 200:
                 dados_json = json.loads(req.text)
+                if 'erro' in dados_json.keys():
+                    return 'CEP NÃO ENCONTRADO'
                 return dados_json
         else:
             return 'CEP NÃO INFORMADO'
