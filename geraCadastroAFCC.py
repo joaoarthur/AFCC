@@ -3,6 +3,7 @@
 import os
 import re
 from sys import platform
+import pickle
 from unicodedata import normalize
 
 from viacep import ViaCEP
@@ -101,6 +102,26 @@ else:
 
 #Abrindo arquivo com dados dos Visitantes
 fh = open(file,'r',encoding = 'utf8')
+
+#Abrindo arquivo com voluntarios de acompanhamento
+fhAcompanhamento = open(r'acompanhamento.txt','r')
+
+voluntarios = []
+for acompanhamento in fhAcompanhamento:
+    voluntario = acompanhamento.split(";")
+    voluntario[0] = int(voluntario[0])
+    voluntario[1] = int(voluntario[1])
+    voluntarios.append(voluntario)
+
+fhAcompanhamento.close()
+
+#ordenando por quantidade de acompanhamentos
+voluntarios.sort()
+
+#quantidade total de voluntarios
+qtd_voluntarios = len(voluntarios)
+
+
 #Pegando o Header do Arquivo para identificar os campos
 campos = fh.readline().upper().split("\t")
 
@@ -240,8 +261,14 @@ for cadastro in fh:
         #fhOut.writelines(",".join(visitante))
         #fhOut.writelines(visitante[constantes['nome']]+";"+visitante[constantes['data_nascimento']]+";"+visitante[constantes['email']]+";"+visitante[constantes['sexo']]+";"+visitante[constantes['estado_civil']]+";"+visitante[constantes['telefone']]+";"+visitante[constantes['cep']]+";"+visitante[constantes['rua']]+";"+visitante[constantes['numero']]+";"+visitante[constantes['complemento']]+";"+visitante[constantes['bairro']]+";"+visitante[constantes['cidade']]+";"+visitante[constantes['uf']]+";"+visitante[constantes['culto']]+";"+visitante[constantes['como_conheceu']]+";"+visitante[constantes['membro_de_igreja']]+";"+visitante[constantes['qual']]+";"+visitante[constantes['status']]+";"+visitante[constantes['observacao']]+";"+visitante[constantes['voluntario']]+";"+visitante[constantes['data_atendimento']])
         fhOut.writelines(visitante[constantes['nome']]+";"+visitante[constantes['email']].lower()+";;;"+visitante[constantes['sexo']].lower()+";"+visitante[constantes['estado_civil']].lower()+";"+visitante[constantes['data_nascimento']]+";;;;;BR;"+visitante[constantes['uf']]+";"+visitante[constantes['cidade']]+";"+visitante[constantes['cep']]+";"+visitante[constantes['rua']]+";"+visitante[constantes['numero']]+";"+visitante[constantes['complemento']]+";"+visitante[constantes['bairro']]+";"+telefone+";nao_membro;17;;;;;;;;;;;;;;"+visitante[constantes['qual']]+";;;"+visitante[constantes['data_atendimento']][0:-1]+";;;;;;\n")
+        if visitante[constantes['status']] in ('Sem Interesse', 'Evangélico com interesse pela AFCC'):
+            voluntarios[0][1] += 1
+        else:
+            voluntarios[0][0] += 1
+
         visitante[constantes['observacao']] += ' Atendente Somar: '+visitante[constantes['voluntario']]
-        fhTratados.writelines(';'.join(visitante[0:2]) + ';' + ';'.join(visitante[3:]))
+        fhTratados.writelines(';'.join(visitante[0:2]) + ';' + ';'.join(visitante[3:-1]) + ';' + visitante[constantes['data_atendimento']][0:-1] +';' + voluntarios[0][2])
+        voluntarios.sort()
 
 
 #Fecha arquivos do processamento
@@ -249,6 +276,15 @@ fh.close()
 fhOut.close()
 fhTratados.close()
 fhTratarManual.close()
+
+fhAcompanhamento = open(r'acompanhamento.txt','w')
+
+for voluntario in voluntarios:
+    voluntario[0] = str(voluntario[0])
+    voluntario[1] = str(voluntario[1])
+    fhAcompanhamento.writelines(';'.join(voluntario))
+
+fhAcompanhamento.close()
 
 #Se nao teve erro. Remove arquivo.
 if not erro:
