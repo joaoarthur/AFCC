@@ -69,12 +69,15 @@ def retorna_CEP(visitante, constantes):
                                     return endereco['cep']
                                 elif endereco['complemento'] == visitante[constantes['numero']]+" "+visitante[constantes['complemento']]:
                                     return endereco['cep'], endereco['bairro'], endereco['localidade'], endereco['uf']
+                                elif len(complemento) == 2 and complemento[0] == 'lado' and complemento[1] == tipo:
+                                    return endereco['cep'], endereco['bairro'], endereco['localidade'], endereco['uf']
             elif enderecos != "ENDERECO NAO INFORMADO":
                 return enderecos[0]['cep'], enderecos[0]['bairro'], enderecos[0]['localidade'], enderecos[0]['uf']
             else:
                 return "","","",""
         elif enderecos != "ENDERECO NAO INFORMADO":
             return enderecos[0]['cep'], enderecos[0]['bairro'], enderecos[0]['localidade'], enderecos[0]['uf']
+
         else:
             return "","","",""
     else:
@@ -161,7 +164,9 @@ for cadastro in fh:
                 continue
             else:
                 visitante[constantes['rua']], visitante[constantes['bairro']], visitante[constantes['cidade']], visitante[constantes['uf']] = rua, bairro, cidade, uf
-
+    elif visitante[constantes['rua']] == "#MANUAL!":
+        visitante[constantes['rua']] = visitante[constantes['rua_manual']]
+        visitante[constantes['cep']] = ''
 
     # remove acentuacao
     visitante[constantes['rua']] = remover_acentos(visitante[constantes['rua']])
@@ -172,12 +177,14 @@ for cadastro in fh:
     #visitante[constantes['cidade']] = bytes(visitante[constantes['cidade']], 'utf-8').decode('latin1')
 
     #Trata campo Nome para retirar abreviacao e Colocar primeira letra maiuscula e as outras minusculas.
-    visitante[constantes['nome']]=" ".join(map(trataNome, visitante[constantes['nome']].split(" ")))
+    visitante[constantes['nome']]="|".join(map(trataNome, visitante[constantes['nome']].split(" ")))
+    visitante[constantes['nome']] = re.sub(r'(\|+)', r' ', visitante[constantes['nome']])
+    visitante[constantes['nome']] =  visitante[constantes['nome']].strip()
     #remove acentuacao
     visitante[constantes['nome']]=remover_acentos(visitante[constantes['nome']])
     #visitante[constantes['nome']] = bytes(visitante[constantes['nome']], 'utf-8').decode('latin1')
 
-    visitante[constantes['voluntario']]=" ".join(map(trataNome, visitante[constantes['voluntario']].split(" ")))
+    #visitante[constantes['voluntario']]=" ".join(map(trataNome, visitante[constantes['voluntario']].split(" ")))
     # remove acentuacao
     #visitante[constantes['voluntario']] = bytes(visitante[constantes['voluntario']], 'utf-8').decode('latin1')
     visitante[constantes['voluntario']]=remover_acentos(visitante[constantes['voluntario']])
@@ -215,7 +222,9 @@ for cadastro in fh:
     #    else:
     #        visitante[constantes['estado_civil']] = visitante[constantes['estado_civil']][0:-3]
     visitante[constantes['qual']] = remover_acentos(visitante[constantes['qual']])
+    visitante[constantes['email']] = remover_acentos(visitante[constantes['email']])
     #visitante[constantes['estado_civil']] = bytes(visitante[constantes['estado_civil']], 'utf8').decode('latin1')
+
     if visitante[constantes['cep']] == 'Endereco nao encontrado':
         #Se nao encontrou CEP, jogar para tratamento manual
         erro=True
@@ -224,7 +233,8 @@ for cadastro in fh:
         #fhOut.writelines(",".join(visitante))
         #fhOut.writelines(visitante[constantes['nome']]+";"+visitante[constantes['data_nascimento']]+";"+visitante[constantes['email']]+";"+visitante[constantes['sexo']]+";"+visitante[constantes['estado_civil']]+";"+visitante[constantes['telefone']]+";"+visitante[constantes['cep']]+";"+visitante[constantes['rua']]+";"+visitante[constantes['numero']]+";"+visitante[constantes['complemento']]+";"+visitante[constantes['bairro']]+";"+visitante[constantes['cidade']]+";"+visitante[constantes['uf']]+";"+visitante[constantes['culto']]+";"+visitante[constantes['como_conheceu']]+";"+visitante[constantes['membro_de_igreja']]+";"+visitante[constantes['qual']]+";"+visitante[constantes['status']]+";"+visitante[constantes['observacao']]+";"+visitante[constantes['voluntario']]+";"+visitante[constantes['data_atendimento']])
         fhOut.writelines(visitante[constantes['nome']]+";"+visitante[constantes['email']].lower()+";;;"+visitante[constantes['sexo']].lower()+";"+visitante[constantes['estado_civil']].lower()+";"+visitante[constantes['data_nascimento']]+";;;;;BR;"+visitante[constantes['uf']]+";"+visitante[constantes['cidade']]+";"+visitante[constantes['cep']]+";"+visitante[constantes['rua']]+";"+visitante[constantes['numero']]+";"+visitante[constantes['complemento']]+";"+visitante[constantes['bairro']]+";"+telefone+";nao_membro;17;;;;;;;;;;;;;;"+visitante[constantes['qual']]+";;;"+visitante[constantes['data_atendimento']][0:-1]+";;;;;;\n")
-        fhTratados.writelines(';'.join(visitante))
+        visitante[constantes['observacao']] += ' Atendente Somar: '+visitante[constantes['voluntario']]
+        fhTratados.writelines(';'.join(visitante[0:2]) + ';' + ';'.join(visitante[3:]))
 
 
 #Fecha arquivos do processamento
