@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import os
 import re
+from sys import platform
 from unicodedata import normalize
 
 from viacep import ViaCEP
@@ -92,8 +93,14 @@ def trataNome(nome):
 
 #Codigo principal
 
+if platform == 'linux':
+    file = r'/home/pi/Downloads/Cadastro Visitantes - Cadastro Visitantes.tsv'
+else:
+    file = r'C:\Users\oi273045\Downloads\Cadastro Visitantes - Cadastro Visitantes.tsv'
+
+
 #Abrindo arquivo com dados dos Visitantes
-fh = open(r'C:\Users\oi273045\Downloads\Cadastro Visitantes - Cadastro Visitantes.tsv','r',encoding = 'utf8')
+fh = open(file,'r',encoding = 'utf8')
 #Pegando o Header do Arquivo para identificar os campos
 campos = fh.readline().upper().split("\t")
 
