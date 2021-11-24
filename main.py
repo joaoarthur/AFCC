@@ -32,7 +32,7 @@ def remover_acentos(txt):
 def retorna_Endereco(cep):
     data = ViaCEP(cep)
     endereco = data.getDadosCEP()
-    if endereco == 'CEP NÃƒO INFORMADO' or endereco == 'CEP NÃƒO ENCONTRADO':
+    if endereco == 'CEP NÃO INFORMADO' or endereco == 'CEP NÃO ENCONTRADO':
         return None, None, None, None
     else:
         return endereco['logradouro'], endereco['bairro'], endereco['localidade'], endereco['uf']
@@ -65,9 +65,9 @@ def retorna_CEP(visitante, constantes):
                                 return endereco['cep'], endereco['bairro'], endereco['localidade'], endereco['uf']
                             else:
                                 if visitante[constantes['numero']].isnumeric():
-                                    tipo = 'par' if int(visitante[constantes['numero']]) % 2 == 0 else 'Ã­mpar'
+                                    tipo = 'par' if int(visitante[constantes['numero']]) % 2 == 0 else 'ímpar'
                                     complemento = endereco['complemento'].split(" ")
-                                    if complemento[0] == "atÃ©":
+                                    if complemento[0] == "até":
                                         if len(complemento) > 2 and complemento[-1] == tipo and int(complemento[1]) >= int(visitante[constantes['numero']]):
                                             return endereco['cep'], endereco['bairro'], endereco['localidade'], endereco['uf']
                                         elif len(complemento) == 2 and int(complemento[1].split("/")[1]) >= int(visitante[constantes['numero']]):
@@ -182,7 +182,7 @@ def geraSaida(fhOut, fhTratados, voluntarios, visitante, constantes):
     if voluntario != -1:
         if visitante[constantes['status']] == 'Sem interesse':
             voluntarios[voluntario][1] += 1
-        elif visitante[constantes['status']] == 'EvangÃ©lico com interesse pela AFCC':
+        elif visitante[constantes['status']] == 'Evangélico com interesse pela AFCC':
             voluntarios[voluntario][1] += 2
         else:
             voluntarios[voluntario][0] += 1
@@ -200,7 +200,7 @@ def geraSaida(fhOut, fhTratados, voluntarios, visitante, constantes):
 if platform == 'linux':
     file = r'/home/pi/Downloads/Cadastro Visitantes - Cadastro Visitantes.tsv'
 else:
-    file = r'/Users/joaoarthur/Downloads/Cadastro Visitantes - Cadastro Visitantes.tsv'
+    file = r'C:\Users\f8084698\Downloads\Cadastro Visitantes - Cadastro Visitantes.tsv'
 
 
 #Abrindo arquivo com dados dos Visitantes
